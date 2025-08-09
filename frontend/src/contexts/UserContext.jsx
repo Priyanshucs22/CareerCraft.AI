@@ -4,6 +4,7 @@ import { cleanupOtherUsersData } from '../utils/statsCalculator';
 
 const UserContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
@@ -75,52 +76,45 @@ export const UserProvider = ({ children }) => {
 
   // Login user
   const loginUser = async (credentials) => {
-    try {
-      const response = await API.post('/auth/login', credentials);
-      if (response.data.user) {
-        // Store user data immediately
-        setUser(response.data.user);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+    const response = await API.post('/auth/login', credentials);
+    if (response.data.user) {
+      // Store user data immediately
+      setUser(response.data.user);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
 
-        // Store token if provided
-        if (response.data.token) {
-          localStorage.setItem('authToken', response.data.token);
-        }
+      // Store token if provided
+      if (response.data.token) {
+        localStorage.setItem('authToken', response.data.token);
+      }
 
-        // Clean up data from other users
-        const userId = response.data.user.id || response.data.user._id;
-        cleanupOtherUsersData(userId);
+      // Clean up data from other users
+      const userId = response.data.user.id || response.data.user._id;
+      cleanupOtherUsersData(userId);
 
-        // Fetch latest profile data from server to ensure we have the most recent info
-        try {
-          const profileResponse = await API.get('/auth/me');
+      // Fetch latest profile data from server to ensure we have the most recent info
+      API.get('/auth/me')
+        .then(profileResponse => {
           if (profileResponse.data.user) {
             const latestUser = profileResponse.data.user;
             setUser(latestUser);
             localStorage.setItem('user', JSON.stringify(latestUser));
           }
-        } catch (profileError) {
+        })
+        .catch(() => {
           console.log('Could not fetch latest profile, using login data');
-        }
-      }
-      return response;
-    } catch (error) {
-      throw error;
+        });
     }
+    return response;
   };
 
   // Register user
   const registerUser = async (userData) => {
-    try {
-      const response = await API.post('/auth/register', userData);
-      if (response.data.user) {
-        setUser(response.data.user);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-      return response;
-    } catch (error) {
-      throw error;
+    const response = await API.post('/auth/register', userData);
+    if (response.data.user) {
+      setUser(response.data.user);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     }
+    return response;
   };
 
   // Logout user

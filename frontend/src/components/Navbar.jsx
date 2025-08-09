@@ -7,7 +7,7 @@ function Navbar() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { updateTheme, isDark, theme, isInitialized } = useTheme();
+  const { isDark, theme, isInitialized } = useTheme();
 
   // Debug theme state
   useEffect(() => {
@@ -230,7 +230,6 @@ function Navbar() {
                     <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 to-pink-500/0 group-hover:from-red-500/10 group-hover:to-pink-500/10 transition-all duration-300"></div>
                   </button>
                 </div>
-              </>
             ) : (
               <div className="flex items-center space-x-3">
                 <Link
@@ -246,7 +245,7 @@ function Navbar() {
                   Get Started
                 </Link>
               </div>
-            )}
+            )
 
             {/* Mobile menu button */}
             <div className="md:hidden">
