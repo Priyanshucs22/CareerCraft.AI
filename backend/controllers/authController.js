@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import auth from '../middleware/auth.js';
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -30,8 +31,16 @@ export const registerUser = async (req, res) => {
       email: user.email
     };
 
+    // Set HTTP-only cookie
+    const token = generateToken(user._id);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     res.status(201).json({
-      token: generateToken(user._id),
       user: userResponse,
       message: 'User registered successfully'
     });
@@ -63,13 +72,61 @@ export const loginUser = async (req, res) => {
       email: user.email
     };
 
+    // Set HTTP-only cookie
+    const token = generateToken(user._id);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     res.json({
-      token: generateToken(user._id),
       user: userResponse,
       message: 'Login successful'
     });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error during login' });
+  }
+};
+
+// Get current user from cookie
+export const getMe = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select('-password');
+
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    res.json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Get me error:', error);
+    res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+// Logout user
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie('token');
+    res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ message: 'Server error during logout' });
   }
 };
