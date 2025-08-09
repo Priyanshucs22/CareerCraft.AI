@@ -129,6 +129,8 @@ function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center space-x-8 gap-4">
+            {user ? (
+              <>
                 {/* Direct Navigation Buttons */}
                 <div className="flex items-center space-x-3">
                   {/* Profile Button */}
@@ -145,13 +147,13 @@ function Navbar() {
                         <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/30 group-hover:ring-white/50 transition-all duration-300">
                           <img
                             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                              user.profile?.firstName && user.profile?.lastName
+                              user?.profile?.firstName && user?.profile?.lastName
                                 ? `${user.profile.firstName} ${user.profile.lastName}`
-                                : user.name
+                                : user?.name || 'User'
                             )}&background=6366f1&color=fff&bold=true&size=40`}
-                            alt={user.profile?.firstName && user.profile?.lastName
+                            alt={user?.profile?.firstName && user?.profile?.lastName
                               ? `${user.profile.firstName} ${user.profile.lastName}`
-                              : user.name}
+                              : user?.name || 'User'}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           />
                         </div>
@@ -230,6 +232,7 @@ function Navbar() {
                     <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 to-pink-500/0 group-hover:from-red-500/10 group-hover:to-pink-500/10 transition-all duration-300"></div>
                   </button>
                 </div>
+              </>
             ) : (
               <div className="flex items-center space-x-3">
                 <Link
@@ -245,7 +248,7 @@ function Navbar() {
                   Get Started
                 </Link>
               </div>
-            )
+            )}
 
             {/* Mobile menu button */}
             <div className="md:hidden">
@@ -263,22 +266,22 @@ function Navbar() {
                         <div className="flex items-center space-x-3">
                           <img
                             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                              user.profile?.firstName && user.profile?.lastName
+                              user?.profile?.firstName && user?.profile?.lastName
                                 ? `${user.profile.firstName} ${user.profile.lastName}`
-                                : user.name
+                                : user?.name || 'User'
                             )}&background=ffffff&color=6366f1&bold=true&size=48`}
-                            alt={user.profile?.firstName && user.profile?.lastName
+                            alt={user?.profile?.firstName && user?.profile?.lastName
                               ? `${user.profile.firstName} ${user.profile.lastName}`
-                              : user.name}
+                              : user?.name || 'User'}
                             className="w-12 h-12 rounded-full"
                           />
                           <div>
                             <p className="font-semibold">
-                              {user.profile?.firstName && user.profile?.lastName
+                              {user?.profile?.firstName && user?.profile?.lastName
                                 ? `${user.profile.firstName} ${user.profile.lastName}`
-                                : user.name}
+                                : user?.name || 'User'}
                             </p>
-                            <p className="text-sm opacity-80">{user.email}</p>
+                            <p className="text-sm opacity-80">{user?.email || 'user@example.com'}</p>
                           </div>
                         </div>
                       </div>
