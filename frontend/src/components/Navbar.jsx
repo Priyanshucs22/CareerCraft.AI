@@ -129,31 +129,6 @@ function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center space-x-8 gap-4">
-            /*{user ? (
-              <>
-                {/* Theme Toggle */}
-                {/* Theme Toggle */}
-                {/* {isInitialized && (
-                  <button
-                    key={`theme-toggle-${theme}-${isDark}`}
-                    onClick={() => {
-                      const newTheme = isDark ? 'light' : 'dark';
-                      console.log('🔄 Toggle clicked! Current:', theme, 'isDark:', isDark, 'Switching to:', newTheme);
-                      updateTheme(newTheme);
-                    }}
-                    className={`p-3 rounded-xl transition-all duration-300 hover:scale-110 border-2 ${
-                      isDark
-                        ? 'bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 border-yellow-500/30'
-                        : 'bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 border-indigo-500/30'
-                    }`}
-                    title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-                  >
-                    <span className="text-xl">
-                      {isDark ? '☀️' : '🌙'}
-                    </span>
-                  </button> */}
-                )}*/
-
                 {/* Direct Navigation Buttons */}
                 <div className="flex items-center space-x-3">
                   {/* Profile Button */}
