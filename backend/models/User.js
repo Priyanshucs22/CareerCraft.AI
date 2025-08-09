@@ -141,8 +141,7 @@ userSchema.methods.getPublicProfile = function() {
   return userObject;
 };
 
-// Indexes for better performance
-userSchema.index({ email: 1 });
+// Indexes for better performance (email index is already created by unique: true)
 userSchema.index({ 'profile.firstName': 1, 'profile.lastName': 1 });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ lastLogin: -1 });
