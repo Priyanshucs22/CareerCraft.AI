@@ -7,39 +7,21 @@ import roadmapRoutes from './routes/roadmapRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import db from './config/db.js';
+import path from 'path';
 
-// Configure dotenv first before using environment variables
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const app = express();
+const __dirname = path.resolve();
 
-// CORS configuration
-const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:3000',
-    'https://careercraft-frontend.onrender.com', // Your Render frontend URL
-    'https://careercraft-ai.vercel.app', // Your Vercel frontend URL (update with actual URL)
-    'https://your-app-name.vercel.app' // Update this with your actual Vercel URL
-];
-
-app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+app.use(cookieParser());
+app.use(
+  cors({
+    origin : "http://localhost:5173",
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-    exposedHeaders: ['Set-Cookie']
-}));
+  })
+);
 
 // Cookie parser middleware
 app.use(cookieParser());
@@ -53,6 +35,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/roadmap', roadmapRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
+}
 
 app.listen(PORT , () => {
     db();
