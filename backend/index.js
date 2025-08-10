@@ -21,12 +21,14 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 
 // CORS configuration
-app.use(
-  cors({
-    origin : "http://localhost:5173",
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? process.env.FRONTEND_URL || true  // Allow any origin in production if FRONTEND_URL not set
+    : "http://localhost:5173",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Middleware
 app.use(cookieParser());
@@ -41,12 +43,20 @@ app.use('/api/roadmap', roadmapRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '../frontend/dist');
+  // Handle different deployment scenarios
+  const frontendPath = process.env.FRONTEND_BUILD_PATH || path.join(__dirname, '../frontend/dist');
+
+  // Serve static files
   app.use(express.static(frontendPath));
 
   // Catch-all route for SPA - serve index.html for all non-API routes
   app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
+    res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
+      if (err) {
+        console.error('Error serving index.html:', err);
+        res.status(500).send('Error loading application');
+      }
+    });
   });
 }
 
