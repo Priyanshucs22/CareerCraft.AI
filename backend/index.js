@@ -51,6 +51,11 @@ if (process.env.NODE_ENV === 'production') {
 
   // Catch-all route for SPA - serve index.html for all non-API routes
   app.get('*', (req, res) => {
+    // Skip API routes
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ message: 'API endpoint not found' });
+    }
+
     res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
       if (err) {
         console.error('Error serving index.html:', err);
