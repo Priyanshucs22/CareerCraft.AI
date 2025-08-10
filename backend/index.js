@@ -44,8 +44,8 @@ if (process.env.NODE_ENV === 'production') {
   const frontendPath = path.join(__dirname, '../frontend/dist');
   app.use(express.static(frontendPath));
 
-  // Fix path-to-regexp crash: use /* instead of *
-  app.get('/*', (req, res) => {
+  // Catch-all route for SPA - serve index.html for all non-API routes
+  app.get('*', (req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
