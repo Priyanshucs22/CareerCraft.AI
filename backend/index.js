@@ -8,14 +8,19 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import db from './config/db.js';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
+// Load environment variables
 dotenv.config();
+
+// ES module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 5000;
 const app = express();
-const __dirname = path.resolve();
 
-app.use(cookieParser());
+// CORS configuration
 app.use(
   cors({
     origin : "http://localhost:5173",
@@ -23,28 +28,30 @@ app.use(
   })
 );
 
-// Cookie parser middleware
+// Middleware
 app.use(cookieParser());
-
-// Increase payload size limits for file uploads and large requests
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Routes
+// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/roadmap', roadmapRoutes);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  const frontendPath = path.join(__dirname, '../frontend/dist');
+  app.use(express.static(frontendPath));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  // Fix path-to-regexp crash: use /* instead of *
+  app.get('/*', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
 
-app.listen(PORT , () => {
-    db();
-    console.log(`server is listening on port : ${PORT}`);
-})
+// Start server
+app.listen(PORT, () => {
+  db();
+  console.log(`Server listening on port: ${PORT}`);
+});
